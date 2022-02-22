@@ -7,6 +7,7 @@ on:
   pull_request:
     paths: 
       - 'roles/sap_general_preconfigure/**'
+  workflow_dispatch:
 jobs:
   ansible-lint:
 
