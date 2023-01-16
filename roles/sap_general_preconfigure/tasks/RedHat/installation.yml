@@ -103,6 +103,11 @@
     - sap_general_preconfigure_set_minor_release
     - __sap_general_preconfigure_register_subscription_manager_release.stdout != ansible_distribution_version
 
+# TODO now community modules can be moved to support
+# better to use 
+# https://docs.ansible.com/ansible/latest/collections/community/general/rhsm_release_module.html
+# to set release 
+
 - name: Ensure that the required package groups are installed, RHEL 7
   ansible.builtin.package:
     name: "{{ sap_general_preconfigure_packagegroups }}"

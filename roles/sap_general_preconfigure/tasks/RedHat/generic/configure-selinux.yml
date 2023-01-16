@@ -1,5 +1,5 @@
 ---
-
+# TODO use posix module https://docs.ansible.com/ansible/latest/collections/ansible/posix/selinux_module.html
 - name: Set SELinux state to '{{ sap_general_preconfigure_selinux_state }}' in /etc/selinux/config
   ansible.builtin.lineinfile:
     path: /etc/selinux/config
@@ -95,7 +95,7 @@
 - name: SELinux - Display the content of sap_general_preconfigure_fact_reboot_required
   ansible.builtin.debug:
     var: sap_general_preconfigure_fact_reboot_required | d(false)
-
+#  TODO why set labels?
 - name: Configure '/usr/sap' SELinux file labels
   ansible.builtin.include_role:
     name: '{{ sap_general_preconfigure_system_roles_collection }}.selinux'

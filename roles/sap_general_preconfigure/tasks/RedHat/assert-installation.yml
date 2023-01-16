@@ -50,6 +50,7 @@
       register: __sap_general_preconfigure_register_enabled_repos_assert
       changed_when: no
 
+# TODO add cloud repos
     - name: Assert that all required repos are enabled
       ansible.builtin.assert:
         that: "'{{ line_item }}' in __sap_general_preconfigure_register_enabled_repos_assert.stdout_lines"

@@ -1,0 +1,20 @@
+---
+
+### If this task fails, you need to enable the IBM PowerTools repository
+### see https://www14.software.ibm.com/support/customercare/sas/f/lopdiags/home.html for details
+
+- name: Install the ibm-power-repo package
+  ansible.builtin.package:
+    name: "{{ sap_hana_preconfigure_ibm_power_repo_url }}"
+    state: present
+    disable_gpg_check: True
+
+- name: Accept the license for the IBM Service and Productivity Tools
+  ansible.builtin.shell: LESS=+q /opt/ibm/lop/configure <<<'y'
+
+# Reason for noqa: Both yum and dnf support "state: latest"
+- name: Install the IBM Service and Productivity Tools # noqa package-latest
+  ansible.builtin.package:
+    state: latest
+    name: "{{ __sap_hana_preconfigure_required_ppc64le }}"
+

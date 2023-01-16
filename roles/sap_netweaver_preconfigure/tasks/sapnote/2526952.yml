@@ -16,6 +16,8 @@
     state: started
     enabled: yes
 
+
+#  TODO there is a linux system role tuned
 - name: Show currently active tuned profile
   ansible.builtin.shell: set -o pipefail && /usr/sbin/tuned-adm active | awk '/:/{print $NF}'
   check_mode: no

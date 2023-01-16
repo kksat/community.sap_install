@@ -1,5 +1,6 @@
 ---
-
+# TODO when asserting add rescue blocks, so if first assert fails, execution continues, 
+# and all asserts run, so at the end should be list of failed asserts
 - name: Assert that all required packages are installed
   ansible.builtin.assert:
     that:

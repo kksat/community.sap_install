@@ -1,5 +1,5 @@
 ---
-
+# TODO mount posix module for that? 
 - name: Configure tmpfs in /etc/fstab
   ansible.builtin.lineinfile:
     path: /etc/fstab
@@ -10,6 +10,28 @@
 
 # The following is necessary to trigger a remount of /dev/shm in case the handler has not been notified
 #   from the previous task
+
+# Ansible facts collect mounts information for instance 
+
+    # "ansible_mounts": [
+    #     {
+    #         "block_available": 502846,
+    #         "block_size": 4096,
+    #         "block_total": 521728,
+    #         "block_used": 18882,
+    #         "device": "/dev/mapper/rootvg-rootlv",
+    #         "fstype": "xfs",
+    #         "inode_available": 1047598,
+    #         "inode_total": 1048576,
+    #         "inode_used": 978,
+    #         "mount": "/",
+    #         "options": "rw,seclabel,relatime,attr2,inode64,logbufs=8,logbsize=32k,noquota",
+    #         "size_available": 2059657216,
+    #         "size_total": 2136997888,
+    #         "uuid": "d283e033-a025-4d2a-bf72-f5225585421b"
+
+# From that size can be calculated 
+
 - name: Get the current size of /dev/shm
   ansible.builtin.shell: df -hl /dev/shm | awk '/\/dev\/shm/&&/tmpfs/{gsub ("G", ""); print $2}'
   register: __sap_general_preconfigure_register_df_shm
@@ -17,6 +39,7 @@
   changed_when: no
   check_mode: no
 
+# TODO remount with mount module
 - name: Trigger remounting if /dev/shm has not the expected size
   ansible.builtin.command: /bin/true
   notify: __sap_general_preconfigure_mount_tmpfs_handler

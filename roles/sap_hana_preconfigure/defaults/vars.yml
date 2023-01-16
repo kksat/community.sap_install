@@ -29,6 +29,7 @@ __sap_hana_preconfigure_supported_rhel_minor_releases:
 
 # required repos for RHEL 7:
 __sap_hana_preconfigure_req_repos:
+# TODO add repos for cloud providers
   x86_64:
     7:
       - "rhel-7-server-e4s-rpms"
@@ -110,6 +111,7 @@ __sap_hana_preconfigure_req_repos:
 
 # required SAP notes for RHEL 8:
 __sap_hana_preconfigure_sapnotes_versions:
+# TODO how note versions are used?
   x86_64:
     "7":
       - { number: '2009879', version: '28' }
