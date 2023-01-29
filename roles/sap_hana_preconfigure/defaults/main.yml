@@ -176,3 +176,14 @@ sap_hana_preconfigure_saptune_solution: HANA
 # When running on Azure, TCP timestamps, reuse and recycle should be disabled
 # set to yes when running on Azure
 sap_hana_preconfigure_saptune_azure: false
+
+
+__sap_hana_preconfigure_needs_restarting_command_mapping:
+  7: "needs-restarting -r"
+  8: "yum needs-restarting -r"
+  "8.0": >
+    "_IKRNL=$(rpm -q --last kernel |
+     awk 'NR==1{sub(/kernel-/,\"\"); print $1}');
+     _CKRNL=$(uname -r); if [ ${_IKRNL} != ${_CKRNL} ];
+     then exit 1; else exit 0; fi"
+  9: "yum needs-restarting -r"
