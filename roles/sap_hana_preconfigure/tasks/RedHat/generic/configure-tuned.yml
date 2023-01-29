@@ -17,7 +17,8 @@
 
     - name: RHEL 8.0 ppc64le - Copy file /etc/tuned/sap-hana-ppc64le/tuned.conf
       ansible.builtin.copy:
-        src: etc/tuned/sap-hana-ppc64le/tuned.conf
+        src: tuned.conf
+        # no need to keep whole path in files
         dest: /etc/tuned/sap-hana-ppc64le/tuned.conf
         owner: root
         group: root
@@ -35,6 +36,7 @@
         enabled: yes
 
     - name: Get currently active tuned profile
+    # ansible-galaxy install linux-system-roles.tuned - worth looking into
       ansible.builtin.shell: /usr/sbin/tuned-adm active | grep ":" | cut -d ":" -f 2 | awk '{$1=$1;print}'
       check_mode: no
       register: __sap_hana_preconfigure_register_current_tuned_profile
