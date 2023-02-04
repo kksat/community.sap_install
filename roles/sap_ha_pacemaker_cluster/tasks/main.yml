@@ -47,15 +47,19 @@
 - name: "SAP HA Prepare Pacemaker - Include variable construction for SAP HANA common"
   ansible.builtin.import_tasks: construct_vars_hana_common.yml
 
-- name: "SAP HA Prepare Pacemaker - Include variable construction for SAP HANA Scale-up"
-  when: sap_ha_pacemaker_cluster_sap_type == 'scaleup'
-  ansible.builtin.include_tasks:
-    file: construct_vars_hana_scaleup.yml
+# - name: "SAP HA Prepare Pacemaker - Include variable construction for SAP HANA Scale-up"
+#   when: sap_ha_pacemaker_cluster_sap_type == 'scaleup'
+#   ansible.builtin.include_tasks:
+#     file: construct_vars_hana_scaleup.yml
+
+# - name: "SAP HA Prepare Pacemaker - Include variable construction for SAP HANA Scale-out"
+#   when: sap_ha_pacemaker_cluster_sap_type == 'scaleout'
+#   ansible.builtin.include_tasks:
+#     file: construct_vars_hana_scaleout.yml
 
 - name: "SAP HA Prepare Pacemaker - Include variable construction for SAP HANA Scale-out"
-  when: sap_ha_pacemaker_cluster_sap_type == 'scaleout'
   ansible.builtin.include_tasks:
-    file: construct_vars_hana_scaleout.yml
+    file: "construct_vars_hana_{{ sap_ha_pacemaker_cluster_sap_type }}.yml"
 
 - name: "SAP HA Install Pacemaker - Block with actual changes"
   block:
@@ -84,25 +88,25 @@
           - __sap_ha_pacemaker_cluster_constraints_colocation is defined
         fail_msg: "Cluster build parameter construction has failed for this parameter."
 
-    - name: "SAP HA Install Pacemaker - Query if CIB already exists"
-      ansible.builtin.command:
-        cmd: cibadmin --query
-      register: __sap_ha_pacemaker_cluster_cib_query
+    - name: "SAP HA Install Pacemaker - Backup CIB"
+      ansible.builtin.shell:
+        cmd: cibadmin --query > /root/cib_backup.xml
+      # register: __sap_ha_pacemaker_cluster_cib_query
       check_mode: false
       changed_when: false
-      failed_when: false
+      # failed_when: false
 
-    - name: "SAP HA Install Pacemaker - Create backup of existing CIB"
-      when:
-        - __sap_ha_pacemaker_cluster_cib_query.stdout is defined
-        - __sap_ha_pacemaker_cluster_cib_query.stdout|length > 0
-      ansible.builtin.copy: # noqa template-instead-of-copy
-        backup: true
-        content: "{{ __sap_ha_pacemaker_cluster_cib_query.stdout }}"
-        dest: /root/cib_backup.xml
-        group: root
-        owner: root
-        mode: 0600
+    # - name: "SAP HA Install Pacemaker - Create backup of existing CIB"
+    #   when:
+    #     - __sap_ha_pacemaker_cluster_cib_query.stdout is defined
+    #     - __sap_ha_pacemaker_cluster_cib_query.stdout|length > 0
+    #   ansible.builtin.copy: # noqa template-instead-of-copy
+    #     backup: true
+    #     content: "{{ __sap_ha_pacemaker_cluster_cib_query.stdout }}"
+    #     dest: /root/cib_backup.xml
+    #     group: root
+    #     owner: root
+    #     mode: 0600
 
     # Cluster installation and configuration through the dedicated
     # linux system role 'ha_cluster'
@@ -115,7 +119,7 @@
       no_log: true  # some parameters contain secrets
       vars:
         __ha_cluster_repos: "{{ __sap_ha_pacemaker_cluster_repos }}"
-        ha_cluster_cluster_name: "{{ __sap_ha_pacemaker_cluster_cluster_name }}"
+        ha_cluster_cluster_name: "{{ sap_ha_pacemaker_cluster_cluster_name }}"
         ha_cluster_constraints_order: "{{ __sap_ha_pacemaker_cluster_constraints_order }}"
         ha_cluster_constraints_colocation: "{{ __sap_ha_pacemaker_cluster_constraints_colocation }}"
         ha_cluster_cluster_properties: "{{ __sap_ha_pacemaker_cluster_cluster_properties }}"
@@ -170,32 +174,32 @@
 # TODO: Deal with secrets in output. They should be masked, maybe with
 # their user provided variables?
 
-- name: "SAP HA Install Pacemaker - Create cluster configuration parameters file"
-  when:
-    - sap_ha_pacemaker_cluster_create_config_varfile
-    - sap_ha_pacemaker_cluster_create_config_dest | length
-  ansible.builtin.template:
-    backup: true
-    dest: "{{ sap_ha_pacemaker_cluster_create_config_dest }}"
-    mode: 0600
-    src: cluster_create_config.j2
-    trim_blocks: true
-    lstrip_blocks: true
-  delegate_to: localhost
-  run_once: true
-  become: false
-  check_mode: false
+# - name: "SAP HA Install Pacemaker - Create cluster configuration parameters file"
+#   when:
+#     - sap_ha_pacemaker_cluster_create_config_varfile
+#     - sap_ha_pacemaker_cluster_create_config_dest | length
+#   ansible.builtin.template:
+#     backup: true
+#     dest: "{{ sap_ha_pacemaker_cluster_create_config_dest }}"
+#     mode: 0600
+#     src: cluster_create_config.j2
+#     trim_blocks: true
+#     lstrip_blocks: true
+#   delegate_to: localhost
+#   run_once: true
+#   become: false
+#   check_mode: false
 
-- name: "SAP HA Install Pacemaker - Display configuration parameters SAVE FILE location"
-  when:
-    - sap_ha_pacemaker_cluster_create_config_varfile
-    - sap_ha_pacemaker_cluster_create_config_dest | length
-  ansible.builtin.debug:
-    msg: |
-      The cluster resource configuration parameters have been saved here:
-      >>>>>     {{ sap_ha_pacemaker_cluster_create_config_dest }}    <<<<<
+# - name: "SAP HA Install Pacemaker - Display configuration parameters SAVE FILE location"
+#   when:
+#     - sap_ha_pacemaker_cluster_create_config_varfile
+#     - sap_ha_pacemaker_cluster_create_config_dest | length
+#   ansible.builtin.debug:
+#     msg: |
+#       The cluster resource configuration parameters have been saved here:
+#       >>>>>     {{ sap_ha_pacemaker_cluster_create_config_dest }}    <<<<<
 
-      Please include these variable definitions if you run the 'ha_cluster'
-      linux system role separately.
-      !! Secret values of resources may be included in this output !!
-  run_once: true
+#       Please include these variable definitions if you run the 'ha_cluster'
+#       linux system role separately.
+#       !! Secret values of resources may be included in this output !!
+#   run_once: true

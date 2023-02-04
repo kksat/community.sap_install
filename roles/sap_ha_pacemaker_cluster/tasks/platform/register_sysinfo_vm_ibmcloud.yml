@@ -4,6 +4,11 @@
 - name: "SAP HA Prepare Pacemaker - Register instance ID"
   ansible.builtin.shell: |
     dmidecode -s system-family
+
+# -s, --string KEYWORD
+# Only display the value of the DMI string identified by KEYWORD. KEYWORD must be a keyword from the following list: bios-vendor, bios-version, bios-release-date, system-manufacturer, system-product-name, system-version, system-serial-number, system-uuid, baseboard-manufacturer, baseboard-product-name, baseboard-version, baseboard-serial-number, baseboard-asset-tag, chassis-manufacturer, chassis-type, chassis-version, chassis-serial-number, chassis-asset-tag, processor-family, processor-manufacturer, processor-version, processor-frequency. Each keyword corresponds to a given DMI type and a given offset within this entry type. Not all strings may be meaningful or even defined on all systems. Some keywords may return more than one result on some systems (e.g. processor-version on a multi-processor system). If KEYWORD is not provided or not valid, a list of all valid keywords is printed and dmidecode exits with an error. This option cannot be used more than once.
+# There is not system-family. How come?
+
   register: __sap_ha_pacemaker_cluster_register_ibmcloud_instance
   changed_when: false
   check_mode: false
