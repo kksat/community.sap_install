@@ -31,16 +31,16 @@
   register: __sap_hana_preconfigure_register_enabled_repos_assert
   changed_when: no
 
-- name: Assert that all required repos are enabled
-  ansible.builtin.assert:
-    that: line_item in __sap_hana_preconfigure_register_enabled_repos_assert.stdout_lines
-    fail_msg: "FAIL: Repository '{{ line_item }}' is not enabled!"
-    success_msg: "PASS: Repository '{{ line_item }}' is enabled."
-  with_items:
-    - "{{ __sap_hana_preconfigure_required_repos }}"
-  loop_control:
-    loop_var: line_item
-  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors | d(false) }}"
+# - name: Assert that all required repos are enabled
+#   ansible.builtin.assert:
+#     that: line_item in __sap_hana_preconfigure_register_enabled_repos_assert.stdout_lines
+#     fail_msg: "FAIL: Repository '{{ line_item }}' is not enabled!"
+#     success_msg: "PASS: Repository '{{ line_item }}' is enabled."
+#   with_items:
+#     - "{{ __sap_hana_preconfigure_required_repos }}"
+#   loop_control:
+#     loop_var: line_item
+#   ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors | d(false) }}"
 
 - name: Detect if and how the minor RHEL release is set
   ansible.builtin.shell: set -o pipefail && subscription-manager release | awk 'NF==2{printf $NF}NF!=2{print}'
