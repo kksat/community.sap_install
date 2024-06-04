@@ -42,30 +42,30 @@
 #     loop_var: line_item
 #   ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors | d(false) }}"
 
-- name: Detect if and how the minor RHEL release is set
-  ansible.builtin.shell: set -o pipefail && subscription-manager release | awk 'NF==2{printf $NF}NF!=2{print}'
-  register: __sap_hana_preconfigure_register_subscription_manager_release_assert
-  changed_when: no
-  ignore_errors: yes
+# - name: Detect if and how the minor RHEL release is set
+#   ansible.builtin.shell: set -o pipefail && subscription-manager release | awk 'NF==2{printf $NF}NF!=2{print}'
+#   register: __sap_hana_preconfigure_register_subscription_manager_release_assert
+#   changed_when: no
+#   ignore_errors: yes
 
-- name: Display the output of the subscription-manager release command
-  ansible.builtin.debug:
-    var: __sap_hana_preconfigure_register_subscription_manager_release_assert
+# - name: Display the output of the subscription-manager release command
+#   ansible.builtin.debug:
+#     var: __sap_hana_preconfigure_register_subscription_manager_release_assert
 
-- name: Assert that the RHEL release is locked correctly
-  ansible.builtin.assert:
-    that: __sap_hana_preconfigure_register_subscription_manager_release_assert.stdout == ansible_distribution_version
-    fail_msg: "FAIL: The RHEL release lock status is '{{ __sap_hana_preconfigure_register_subscription_manager_release_assert.stdout }}'
-               but the expected value is '{{ ansible_distribution_version }}'!"
-    success_msg: "PASS: The RHEL release is correctly locked to '{{ ansible_distribution_version }}'."
-  ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors | d(false) }}"
-  when: "ansible_distribution_version != '7.9'"
+# - name: Assert that the RHEL release is locked correctly
+#   ansible.builtin.assert:
+#     that: __sap_hana_preconfigure_register_subscription_manager_release_assert.stdout == ansible_distribution_version
+#     fail_msg: "FAIL: The RHEL release lock status is '{{ __sap_hana_preconfigure_register_subscription_manager_release_assert.stdout }}'
+#                but the expected value is '{{ ansible_distribution_version }}'!"
+#     success_msg: "PASS: The RHEL release is correctly locked to '{{ ansible_distribution_version }}'."
+#   ignore_errors: "{{ sap_hana_preconfigure_assert_ignore_errors | d(false) }}"
+#   when: "ansible_distribution_version != '7.9'"
 
-- name: Report that checking the release lock is not necessary if the system is on RHEL 7.9
-  ansible.builtin.debug:
-    msg: "INFO: No need to check the release lock setting as the RHEL release {{ ansible_distribution_version }}
-          is the last RHEL {{ ansible_distribution_major_version }} minor release"
-  when: "ansible_distribution_version == '7.9'"
+# - name: Report that checking the release lock is not necessary if the system is on RHEL 7.9
+#   ansible.builtin.debug:
+#     msg: "INFO: No need to check the release lock setting as the RHEL release {{ ansible_distribution_version }}
+#           is the last RHEL {{ ansible_distribution_major_version }} minor release"
+#   when: "ansible_distribution_version == '7.9'"
 
 - name: Assert that all required packages are installed
   ansible.builtin.assert:
